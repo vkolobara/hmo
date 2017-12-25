@@ -9,25 +9,32 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "BusStop.h"
-#include "Student.h"
+#include "Coordinate.h"
 
 class Parser {
 private:
-    std::shared_ptr<BusStop> school;
-    std::vector<BusStop> busStops;
-    std::vector<Student> students;
+    std::shared_ptr<Coordinate> school;
+    std::vector<Coordinate> busStops;
+    std::vector<Coordinate> students;
     unsigned int busCapacity;
     double maxWalk;
+    std::vector<std::vector<double>> studentToStopDistance;
+    std::vector<double> stopToSchoolDistance;
 public:
     Parser();
     void parse(std::string file);
 
-    const std::shared_ptr<BusStop> &getSchool() const;
+    const std::vector<std::vector<double>> &getStudentToStopDistance() const;
 
-    const std::vector<BusStop> &getBusStops() const;
+    virtual ~Parser();
 
-    const std::vector<Student> &getStudents() const;
+    const std::shared_ptr<Coordinate> &getSchool() const;
+
+    const std::vector<Coordinate> &getBusStops() const;
+
+    const std::vector<double> &getStopToSchoolDistance() const;
+
+    const std::vector<Coordinate> &getStudents() const;
 
     unsigned int getBusCapacity() const;
 

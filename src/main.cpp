@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "model/Parser.h"
+#include "algorithm/StudentAssignment.h"
 
 using namespace std;
 
@@ -15,6 +16,10 @@ int main(char **args) {
     cout << parser.getMaxWalk() << endl;
     cout << parser.getBusStops().size() << endl;
     cout << parser.getStudents().size() << endl;
-    cout << parser.getSchool()->getPos().getY() << endl;
+    cout << parser.getSchool()->getY() << endl;
+
+    StudentAssignment assignment;
+
+    assignment.assign(parser);
 
 }

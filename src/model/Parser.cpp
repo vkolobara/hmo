@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include "Parser.h"
 
 using namespace std;
@@ -28,6 +29,9 @@ void Parser::parse(string filePath) {
     this->maxWalk = maxWalk;
     busCapacity = capacity;
 
+    const unsigned int rows = nStudents;
+    const unsigned int cols = nStops;
+
     // Skip empty line
     getline(file, line);
 
@@ -40,15 +44,17 @@ void Parser::parse(string filePath) {
     iss.str(line);
 
     iss >> id >> x >> y;
-    school = make_shared<BusStop>(id, Coordinate(x,y));
+    school = make_shared<Coordinate>(Coordinate(x,y));
 
     nStops--;
     while(nStops--) {
         getline(file, line);
         stringstream ss(line);
 
-        iss >> id >> x >> y;
-        busStops.emplace_back(id, Coordinate(x,y));
+        ss >> id >> x >> y;
+        Coordinate coord(x,y);
+        busStops.emplace_back(coord);
+        stopToSchoolDistance.emplace_back(Coordinate::euclideanDistance(*school.get(), coord));
     }
 
     getline(file, line);
@@ -57,8 +63,19 @@ void Parser::parse(string filePath) {
     while(nStudents--) {
         getline(file, line);
         stringstream ss(line);
-        iss >> id >> x >> y;
-        students.emplace_back(id, Coordinate(x,y));
+        ss >> id >> x >> y;
+        Coordinate coord(x,y);
+        students.emplace_back(coord);
+
+        vector<double> distances;
+
+        for (int i=0; i<busStops.size(); i++) {
+            double dst = Coordinate::euclideanDistance(coord, busStops[i]);
+            distances.push_back(dst);
+        }
+
+        studentToStopDistance.push_back(distances);
+
     }
 
 }
@@ -67,22 +84,33 @@ Parser::Parser() {
 
 }
 
-const shared_ptr<BusStop> &Parser::getSchool() const {
-    return school;
-}
-
-const vector<BusStop> &Parser::getBusStops() const {
-    return busStops;
-}
-
-const vector<Student> &Parser::getStudents() const {
-    return students;
-}
-
 unsigned int Parser::getBusCapacity() const {
     return busCapacity;
 }
 
 double Parser::getMaxWalk() const {
     return maxWalk;
+}
+
+const shared_ptr<Coordinate> &Parser::getSchool() const {
+    return school;
+}
+
+const vector<Coordinate> &Parser::getBusStops() const {
+    return busStops;
+}
+
+const vector<Coordinate> &Parser::getStudents() const {
+    return students;
+}
+
+Parser::~Parser() {
+}
+
+const vector<vector<double>> &Parser::getStudentToStopDistance() const {
+    return studentToStopDistance;
+}
+
+const vector<double> &Parser::getStopToSchoolDistance() const {
+    return stopToSchoolDistance;
 }
