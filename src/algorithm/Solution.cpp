@@ -121,11 +121,24 @@ Solution Solution::initGRASP(Parser parser) {
         }
     }
 
-    return Solution(final_solution);
+    return Solution(final_solution, parser);
 }
 
-Solution::Solution(vector<vector<int>> solution) : solution(std::move(solution)) {}
+Solution::Solution(vector<vector<int>> solution, Parser parser) : solution(std::move(solution)), parser(parser) {}
 
 const vector<vector<int>> &Solution::getSolution() const {
     return solution;
+}
+
+double Solution::getFitness() {
+    double fitness = 0;
+    auto busStopDistances = parser.getStopToSchoolDistance();
+    auto busStops = parser.getBusStops();
+    for (auto route : solution) {
+        for (int i=1; i<route.size(); i++) {
+            fitness += Coordinate::euclideanDistance(busStops[route[i]], busStops[route[i-1]]);
+        }
+        fitness += busStopDistances[route[0]] + busStopDistances[route[route.size()-1]];
+    }
+    return fitness;
 }

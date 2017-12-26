@@ -13,8 +13,12 @@ using namespace std;
 class Solution {
 private:
     vector<vector<int>> solution;
+    Parser parser;
 public:
-    explicit Solution(vector<vector<int>> solution);
+    explicit Solution(vector<vector<int>> solution, Parser parser);
+
+    double getFitness();
+
 
     static Solution initGRASP(Parser parser);
 
