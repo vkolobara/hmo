@@ -4,10 +4,12 @@
 
 #include <queue>
 #include <iostream>
+#include <random>
 #include "StudentAssignment.h"
 
 void StudentAssignment::assign(Parser parser) {
-
+    std::random_device rd; // obtain a random number from hardware
+    std::mt19937 eng(rd()); // seed the generator
     auto busCapacity = parser.getBusCapacity();
     auto maxWalk = parser.getMaxWalk();
     const auto &busStops = parser.getBusStops();
@@ -22,11 +24,10 @@ void StudentAssignment::assign(Parser parser) {
         return stopDistances[left] < stopDistances[right];
     };
 
-    std::vector<int> busStopCount = {0};
+    busStopCount = std::vector<int>(busStops.size(), 0);
 
     for (int i=0; i<students.size(); i++) {
         std::priority_queue<int, std::vector<int>, decltype(cmp)> queue(cmp);
-        std::cout << "PRIJE " << std::endl;
 
         for (int j=0; j<busStops.size(); j++) {
             if (maxWalk >= studentDistances[i][j]) {
@@ -34,40 +35,44 @@ void StudentAssignment::assign(Parser parser) {
             }
         }
 
-        std::cout << "TU: " << i << std::endl;
-        std::cout << queue.size() << std::endl;
         if (queue.size() == 1) {
             assignment[i] = queue.top();
-            busStopCount[queue.top()]++;
         } else {
             std::vector<int> possibilities;
-            for (int i=0; i<alpha && !queue.empty(); i++) {
+
+            for (int j=0; j<alpha && !queue.empty(); j++) {
                 possibilities.push_back(queue.top());
                 queue.pop();
             }
-            while (true) {
-                auto sel = possibilities[rand() % possibilities.size()];
-                std::cout << possibilities.size();
-                std::cout << "SELECTED: " << sel << std::endl;
-                if (busStopCount[sel] <= busCapacity) {
+            std::uniform_int_distribution<> distr(0, possibilities.size()-1);
+            int ind = distr(eng);
+            int sel = possibilities[ind];
+
+            while(true) {
+                if (busStopCount.at(sel) < busCapacity) {
                     assignment[i] = sel;
-                    busStopCount[sel]++;
                     break;
+                } else {
+                    possibilities.erase(possibilities.begin()+ind);
+                    ind = std::max(ind-1, 0);
+                    sel = possibilities[ind];
                 }
             }
         }
+        busStopCount[assignment[i]]++;
+
 
     }
-
-    for (auto elem : assignment) {
-        std::cout << elem.first << " " << elem.second << std::endl;
-    }
-
-
-
-
 }
 
 StudentAssignment::StudentAssignment() {
 
+}
+
+const std::map<int, int> &StudentAssignment::getAssignment() const {
+    return assignment;
+}
+
+const std::vector<int> &StudentAssignment::getBusStopCount() const {
+    return busStopCount;
 }

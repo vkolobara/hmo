@@ -12,10 +12,14 @@
 class StudentAssignment {
 private:
     std::map<int,int> assignment;
+    std::vector<int> busStopCount;
 public:
     StudentAssignment();
     void assign(Parser parser);
 
+    const std::map<int, int> &getAssignment() const;
+
+    const std::vector<int> &getBusStopCount() const;
 };
 
 
