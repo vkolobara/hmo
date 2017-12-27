@@ -1,17 +1,10 @@
 //
 // Created by vkolobara on 12/26/17.
 //
-
-#include <random>
-#include <utility>
-#include <queue>
-#include <set>
 #include "Solution.h"
-#include "StudentAssignment.h"
+
 
 Solution Solution::initGRASP(Parser parser) {
-    std::random_device rd; // obtain a random number from hardware
-    std::mt19937 eng(rd()); // seed the generator
     auto busCapacity = parser.getBusCapacity();
     auto maxWalk = parser.getMaxWalk();
     const auto &busStops = parser.getBusStops();
@@ -67,7 +60,7 @@ Solution Solution::initGRASP(Parser parser) {
 
         std::uniform_int_distribution<> distr(0, alpha - 1);
 
-        int index = distr(eng);
+        int index = distr(Random::eng);
         auto curr = sorted[index];
 
         auto i = curr.first;
@@ -76,7 +69,7 @@ Solution Solution::initGRASP(Parser parser) {
         if (studentsPerRoute[busStopOnRoute[i]] + studentsPerRoute[busStopOnRoute[j]] <= busCapacity
             && studentsPerRoute[busStopOnRoute[i]] > 0
             && studentsPerRoute[busStopOnRoute[j]] > 0
-                && i!=j) {
+            && i != j) {
 
             if (solution[busStopOnRoute[i]].front() == i && solution[busStopOnRoute[j]].back() == j) {
 
@@ -90,7 +83,7 @@ Solution Solution::initGRASP(Parser parser) {
                     solution[busStopOnRoute[i]].push_back(elem);
                 }
 
-                solution[route].clear();
+                //solution[route].clear();
 
             } else if (solution[busStopOnRoute[j]].front() == j && solution[busStopOnRoute[i]].back() == i) {
                 auto route = busStopOnRoute[i];
@@ -103,7 +96,7 @@ Solution Solution::initGRASP(Parser parser) {
                     solution[busStopOnRoute[j]].push_back(elem);
                 }
 
-                solution[route].clear();
+                //solution[route].clear();
 
             }
 
@@ -113,32 +106,46 @@ Solution Solution::initGRASP(Parser parser) {
 
     }
 
-    vector<vector<int>> final_solution;
+    vector<int> final_solution;
 
     for (int i = 0; i < solution.size(); i++) {
         if (studentsPerRoute[i] > 0) {
-            final_solution.push_back(solution[i]);
+            for (int j = 0; j < solution[i].size(); j++) {
+                final_solution.push_back(solution[i][j]+1);
+            }
+
+            final_solution.push_back(0);
         }
     }
 
     return Solution(final_solution, parser);
 }
 
-Solution::Solution(vector<vector<int>> solution, Parser parser) : solution(std::move(solution)), parser(parser) {}
+Solution::Solution(vector<int> solution, Parser parser) : solution(std::move(solution)), parser(parser) {}
 
-const vector<vector<int>> &Solution::getSolution() const {
+const vector<int> &Solution::getSolution() const {
     return solution;
 }
 
-double Solution::getFitness() {
+double Solution::getFitness() const {
     double fitness = 0;
     auto busStopDistances = parser.getStopToSchoolDistance();
     auto busStops = parser.getBusStops();
-    for (auto route : solution) {
-        for (int i=1; i<route.size(); i++) {
-            fitness += Coordinate::euclideanDistance(busStops[route[i]], busStops[route[i-1]]);
-        }
-        fitness += busStopDistances[route[0]] + busStopDistances[route[route.size()-1]];
+    for (int i=1; i<solution.size(); i++) {
+        if (solution.at(i) == 0) fitness+=busStopDistances[solution.at(i-1)-1];
+        else if (solution.at(i-1) == 0) fitness+=busStopDistances[solution.at(i)-1];
+        else fitness += Coordinate::euclideanDistance(busStops[solution[i]-1], busStops[solution[i - 1]-1]);
     }
+
+    fitness += busStopDistances[solution.at(0)];
+
     return fitness;
+}
+
+const Parser &Solution::getParser() const {
+    return parser;
+}
+
+bool Solution::operator<(const Solution &obj) const {
+    return getFitness() < obj.getFitness();
 }

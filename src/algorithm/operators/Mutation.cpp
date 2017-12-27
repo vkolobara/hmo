@@ -8,7 +8,13 @@ SimpleMutation::SimpleMutation(double mutFactor) : mutFactor(mutFactor) {}
 
 Solution SimpleMutation::mutate(Solution sol) {
 
-    vector<vector<int>> mutated;
+    vector<int> mutated;
+
+    const vector<int> &currSolution = sol.getSolution();
+
+
+
+
 
     return Solution(mutated, sol.getParser());
 }

@@ -2,9 +2,6 @@
 // Created by vkolobara on 12/24/17.
 //
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include "Parser.h"
 
 using namespace std;

@@ -8,6 +8,9 @@
 
 #include <map>
 #include "../model/Parser.h"
+#include "Random.h"
+#include <queue>
+
 
 class StudentAssignment {
 private:

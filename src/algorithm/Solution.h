@@ -7,22 +7,29 @@
 
 #include <vector>
 #include "../model/Parser.h"
+#include <utility>
+#include <queue>
+#include <set>
+#include "StudentAssignment.h"
+#include "Random.h"
 
 using namespace std;
 
 class Solution {
 private:
-    vector<vector<int>> solution;
+    vector<int> solution;
     Parser parser;
 public:
-    explicit Solution(vector<vector<int>> solution, Parser parser);
+    explicit Solution(vector<int> solution, Parser parser);
 
-    double getFitness();
-
+    double getFitness() const;
 
     static Solution initGRASP(Parser parser);
 
-    const vector<vector<int>> &getSolution() const;
+    const vector<int> &getSolution() const;
+
+    const Parser &getParser() const;
+    bool operator <(const Solution & obj) const;
 };
 
 

@@ -2,14 +2,9 @@
 // Created by vkolobara on 12/25/17.
 //
 
-#include <queue>
-#include <iostream>
-#include <random>
 #include "StudentAssignment.h"
 
 void StudentAssignment::assign(Parser parser) {
-    std::random_device rd; // obtain a random number from hardware
-    std::mt19937 eng(rd()); // seed the generator
     auto busCapacity = parser.getBusCapacity();
     auto maxWalk = parser.getMaxWalk();
     const auto &busStops = parser.getBusStops();
@@ -45,7 +40,7 @@ void StudentAssignment::assign(Parser parser) {
                 queue.pop();
             }
             std::uniform_int_distribution<> distr(0, possibilities.size()-1);
-            int ind = distr(eng);
+            int ind = distr(Random::eng);
             int sel = possibilities[ind];
 
             while(true) {

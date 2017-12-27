@@ -2,7 +2,6 @@
 // Created by vkolobara on 12/24/17.
 //
 
-#include <cmath>
 #include "Coordinate.h"
 
 Coordinate::Coordinate(double x, double y) : x(x), y(y) {}

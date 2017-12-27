@@ -5,6 +5,7 @@
 #ifndef HMO_COORDINATE_H
 #define HMO_COORDINATE_H
 
+#include <cmath>
 
 class Coordinate {
 private:

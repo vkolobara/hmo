@@ -5,7 +5,8 @@
 #ifndef HMO_PARSER_H
 #define HMO_PARSER_H
 
-
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <memory>

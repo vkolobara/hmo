@@ -6,7 +6,7 @@
 #define HMO_MUTATION_H
 
 
-#include "Solution.h"
+#include "../Solution.h"
 
 class Mutation {
 public:
