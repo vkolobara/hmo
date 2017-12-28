@@ -4,14 +4,12 @@
 
 #include "Population.h"
 
-Population::Population(uint size, Parser parser) : size(size) {
-    initPopulation(parser);
+Population::Population(uint size) : size(size) {
 }
 
-void Population::initPopulation(Parser parser) {
-
+void Population::initPopulation(Parser parser, StudentAssignment assignment) {
     for (uint i=0; i<size; i++) {
-        population.push_back(Solution::initGRASP(parser));
+        addSolution(Solution::initGRASP(parser, assignment));
     }
 
 }
@@ -22,4 +20,8 @@ const vector<Solution> &Population::getPopulation() const {
 
 uint Population::getSize() const {
     return size;
+}
+
+void Population::addSolution(Solution solution) {
+    population.push_back(solution);
 }

@@ -4,7 +4,7 @@
 #include "Solution.h"
 
 
-Solution Solution::initGRASP(Parser parser) {
+Solution Solution::initGRASP(Parser parser, StudentAssignment assignment) {
     auto busCapacity = parser.getBusCapacity();
     auto maxWalk = parser.getMaxWalk();
     const auto &busStops = parser.getBusStops();
@@ -12,9 +12,6 @@ Solution Solution::initGRASP(Parser parser) {
     const auto &school = parser.getSchool();
     const auto &stopDistances = parser.getStopToSchoolDistance();
     const auto &studentDistances = parser.getStudentToStopDistance();
-
-    StudentAssignment assignment;
-    assignment.assign(parser);
 
     const auto &busStopCount = assignment.getBusStopCount();
 
@@ -118,10 +115,10 @@ Solution Solution::initGRASP(Parser parser) {
         }
     }
 
-    return Solution(final_solution, parser);
+    return Solution(final_solution, parser, assignment);
 }
 
-Solution::Solution(vector<int> solution, Parser parser) : solution(std::move(solution)), parser(parser) {}
+Solution::Solution(vector<int> solution, Parser parser, StudentAssignment assignment) : solution(std::move(solution)), parser(parser), assignment(assignment) {}
 
 const vector<int> &Solution::getSolution() const {
     return solution;
@@ -148,4 +145,8 @@ const Parser &Solution::getParser() const {
 
 bool Solution::operator<(const Solution &obj) const {
     return getFitness() < obj.getFitness();
+}
+
+const StudentAssignment &Solution::getAssignment() const {
+    return assignment;
 }

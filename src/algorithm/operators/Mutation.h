@@ -13,11 +13,19 @@ public:
     virtual Solution mutate(Solution sol) = 0;
 };
 
-class SimpleMutation : public Mutation {
+class AdjustRouteMutation : public Mutation {
 private:
     double mutFactor;
 public:
-    SimpleMutation(double mutFactor);
+    explicit AdjustRouteMutation(double mutFactor);
+    Solution mutate(Solution sol) override;
+};
+
+class CombineRouteMutation : public Mutation {
+private:
+    double mutFactor;
+public:
+    explicit CombineRouteMutation(double mutFactor);
     Solution mutate(Solution sol) override;
 };
 

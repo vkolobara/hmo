@@ -7,12 +7,15 @@
 #include "algorithm/Solution.h"
 #include "algorithm/Population.h"
 #include "algorithm/operators/Selection.h"
+#include "algorithm/Algorithm.h"
 #include <chrono>
 
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+
+    auto start = std::chrono::high_resolution_clock::now();
 
 
     Parser parser;
@@ -24,14 +27,12 @@ int main(int argc, char *argv[]) {
     cout << parser.getStudents().size() << endl;
     cout << parser.getSchool()->getY() << endl;
 
-    Population pop(10, parser);
+    shared_ptr<Selection> selection = make_shared<TournamentSelection>(3);
+    shared_ptr<Mutation> mutation = make_shared<AdjustRouteMutation>(0.2);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    Algorithm algo(30);
 
-    TournamentSelection selection(4);
-    for (auto sol : selection.select(pop)) {
-        cout << sol.getFitness() << endl;
-    }
+    algo.execute(parser, selection, mutation);
 
     auto finish = std::chrono::high_resolution_clock::now();
     cout << "Total took " << (finish-start).count()/1000000000.0 << " seconds!" << endl;

@@ -12,12 +12,12 @@ class Population {
 private:
     vector<Solution> population;
     uint size;
-    void initPopulation(Parser parser);
 public:
-    explicit Population(uint size, Parser parser);
+    explicit Population(uint size);
+    void initPopulation(Parser parser, StudentAssignment assignment);
 
     const vector<Solution> &getPopulation() const;
-
+    void addSolution(Solution solution);
     uint getSize() const;
 
 };

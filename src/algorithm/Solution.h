@@ -19,17 +19,20 @@ class Solution {
 private:
     vector<int> solution;
     Parser parser;
+    StudentAssignment assignment;
 public:
-    explicit Solution(vector<int> solution, Parser parser);
+    Solution(vector<int> solution, Parser parser, StudentAssignment asignment);
 
     double getFitness() const;
 
-    static Solution initGRASP(Parser parser);
+    static Solution initGRASP(Parser parser, StudentAssignment assignment);
 
     const vector<int> &getSolution() const;
 
     const Parser &getParser() const;
     bool operator <(const Solution & obj) const;
+
+    const StudentAssignment &getAssignment() const;
 };
 
 
