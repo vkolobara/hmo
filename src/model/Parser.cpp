@@ -74,6 +74,7 @@ void Parser::parse(string filePath) {
         studentToStopDistance.push_back(distances);
 
     }
+    file.close();
 
 }
 
