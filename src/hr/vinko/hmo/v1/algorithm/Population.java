@@ -1,7 +1,9 @@
 package hr.vinko.hmo.v1.algorithm;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
+import hr.vinko.hmo.v1.algorithm.StudentAssignment;
 import hr.vinko.hmo.parser.Parser;
 
 public class Population {
@@ -14,9 +16,7 @@ public class Population {
 		population = new ArrayList<>(size);
 	}
 	
-	public static Population initPopulation(int size, Parser parser) {
-		StudentAssignment assignment = StudentAssignment.assign(parser);
-		
+	public static Population initPopulation(int size, Parser parser, StudentAssignment assignment) {
 		Population pop = new Population(size);
 		
 		while (pop.population.size() < size) {
@@ -55,6 +55,10 @@ public class Population {
 	
 	public void add(Solution sol) {
 		 if (!isFull()) population.add(sol);
+	}
+	
+	public double getAvg() {
+		return population.stream().map(x -> x.getFitness()).reduce(Double::sum).get()/population.size();
 	}
 
 	public void remove(Solution sol) {

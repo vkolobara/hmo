@@ -55,6 +55,10 @@ public class Solution {
 		return fitness;
 	}
 	
+	public void setAssignment(StudentAssignment assignment) {
+		this.assignment = assignment;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

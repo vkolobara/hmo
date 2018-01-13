@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import hr.vinko.hmo.parser.Coordinate;
 import hr.vinko.hmo.parser.Parser;
@@ -68,8 +69,6 @@ public class Solution {
 		return fitness;
 	}
 
-
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -95,9 +94,8 @@ public class Solution {
 		return true;
 	}
 
-	public static Solution initGRASP(Parser parser, StudentAssignment studentAssignment) {
+	public static Solution initGRASP(Parser parser, StudentAssignment studentAssignment, boolean greedy) {
 		int busCapacity = parser.getBusCapacity();
-		List<Coordinate> busStops = parser.getBusStops();
 
 		int[] busStopCount = new int[parser.getBusStops().size()];
 		int[] assignment = new int[parser.getStudents().size()];
@@ -108,27 +106,47 @@ public class Solution {
 		 * *********************************************************************
 		 * ***********
 		 */
-		int alpha = busStops.size()/2;
 
-		for (int i = 0; i < parser.getStudents().size(); i++) {
-			List<Integer> queue = new ArrayList<>(studentAssignment.possibilities.get(i));
-			int ind = 0;
+		int studList[] = IntStream.range(0, parser.getStudents().size()).toArray();
 
-			ind = rand.nextInt(Math.min(alpha, queue.size()));
+		outer: while (true) {
+			busStopCount = new int[parser.getBusStops().size()];
 
-			while (true) {
-				int sel = queue.get(ind);
-
-				if (busStopCount[sel] < busCapacity) {
-					assignment[i] = sel;
-					break;
-				} else {
-					queue.remove(ind);
-					ind = ind - 1 > 0 ? ind - 1 : 0;
-				}
+			for (int i = 0; i < studList.length; i++) {
+				int randomPosition = rand.nextInt(studList.length);
+				int temp = studList[i];
+				studList[i] = studList[randomPosition];
+				studList[randomPosition] = temp;
 			}
 
-			busStopCount[assignment[i]]++;
+			for (int i = 0; i < studList.length; i++) {
+				int index = studList[i];
+				List<Integer> queue = new ArrayList<>(studentAssignment.possibilities.get(index));
+				int ind = 0;
+
+				if (greedy) {
+					ind = rand.nextInt(Math.min(5, queue.size()));
+				} else {
+					ind = rand.nextInt(queue.size());
+				}
+
+				while (true) {
+					if (queue.size() == 0)
+						continue outer;
+					int sel = queue.get(ind);
+
+					if (busStopCount[sel] < busCapacity) {
+						assignment[index] = sel;
+						break;
+					} else {
+						queue.remove(ind);
+						ind = ind - 1 > 0 ? ind - 1 : 0;
+					}
+				}
+
+				busStopCount[assignment[index]]++;
+			}
+			break;
 		}
 
 		/*

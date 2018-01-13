@@ -11,11 +11,9 @@ import hr.vinko.hmo.v2.algorithm.Solution;
 public class ScrambleAssignmentMutation implements Mutation<Solution> {
 
 	private double mutRate;
-	private int alphaFactor;
 	
-	public ScrambleAssignmentMutation(double mutRate, int alphaFactor) {
+	public ScrambleAssignmentMutation(double mutRate) {
 		this.mutRate = mutRate;
-		this.alphaFactor = alphaFactor;
 	}
 	
 	@Override
@@ -30,7 +28,7 @@ public class ScrambleAssignmentMutation implements Mutation<Solution> {
 		for (int i = 0; i < assignment.length; i++) {
 			if (rand.nextDouble() <= mutRate) {
 				List<Integer> possibilites = new ArrayList<>(availableMap.get(i));
-				int alpha = Math.max(Math.min(alphaFactor, possibilites.size()), possibilites.size() / alphaFactor);
+				int alpha = Math.max(1, possibilites.size()/5);
 
 				int ind = rand.nextInt(alpha);
 				busStopCount[assignment[i]]--;

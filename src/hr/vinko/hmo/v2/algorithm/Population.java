@@ -14,13 +14,12 @@ public class Population {
 		population = new ArrayList<>(size);
 	}
 	
-	public static Population initPopulation(int size, Parser parser) {
-		StudentAssignment assignment = StudentAssignment.assign(parser);
+	public static Population initPopulation(int size, Parser parser, StudentAssignment assignment) {
 		
 		Population pop = new Population(size);
 		
 		while (pop.population.size() < size) {
-			pop.population.add(Solution.initGRASP(parser, assignment));
+			pop.population.add(Solution.initGRASP(parser, assignment, true));
 		}
 		
 		return pop;
@@ -67,6 +66,10 @@ public class Population {
 	
 	public int getCapacity() {
 		return capacity;
+	}
+
+	public double getAvg() {
+		return population.stream().map(x -> x.getFitness()).reduce(Double::sum).get() / population.size();
 	}
 
 	

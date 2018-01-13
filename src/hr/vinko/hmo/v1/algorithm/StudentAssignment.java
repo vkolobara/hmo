@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import hr.vinko.hmo.parser.Coordinate;
 import hr.vinko.hmo.parser.Parser;
@@ -22,7 +23,7 @@ public class StudentAssignment {
 		busStopCount = new int[nStops];
 	}
 
-	public static StudentAssignment assign(Parser parser) {
+	public static StudentAssignment assign(Parser parser, boolean greedy) {
 
 		int busCapacity = parser.getBusCapacity();
 		double maxWalk = parser.getMaxWalk();
@@ -34,19 +35,33 @@ public class StudentAssignment {
 
 		StudentAssignment assignment = new StudentAssignment(busStops.size());
 
-		int alpha = busStops.size()/5;
-		alpha = 5;
+		int alpha;
+		if (greedy) {
+			alpha = Math.max(1, busStops.size()/5);
+		} else {
+			alpha = busStops.size();
+		}
+		
+		int studList[] = IntStream.range(0, students.size()).toArray();
 
-		for (int i = 0; i < students.size(); i++) {
+		for (int i = 0; i < studList.length; i++) {
+			int randomPosition = rand.nextInt(studList.length);
+			int temp = studList[i];
+			studList[i] = studList[randomPosition];
+			studList[randomPosition] = temp;
+		}
+
+		for (int i = 0; i < studList.length; i++) {
+			int index = studList[i];
 			List<Integer> queue = new ArrayList<>();
 
 			for (int j = 0; j < busStops.size(); j++) {
-				if (maxWalk >= studentDistances[i][j])
+				if (maxWalk >= studentDistances[index][j])
 					queue.add(j);
 			}
 
 			if (queue.size() == 1)
-				assignment.assignment.put(i, queue.get(0));
+				assignment.assignment.put(index, queue.get(0));
 			else {
 				queue.sort(new Comparator<Integer>() {
 					@Override
@@ -55,16 +70,14 @@ public class StudentAssignment {
 					}
 				});
 				int ind = 0;
-				
-				if (rand.nextDouble()<=1) {
-					ind = rand.nextInt(Math.min(alpha, queue.size()));
-				}
+
+				ind = rand.nextInt(Math.min(alpha, queue.size()));
 
 				while (true) {
 					int sel = queue.get(ind);
 
 					if (assignment.busStopCount[sel] < busCapacity) {
-						assignment.assignment.put(i, sel);
+						assignment.assignment.put(index, sel);
 						break;
 					} else {
 						queue.remove(ind);
@@ -74,7 +87,7 @@ public class StudentAssignment {
 
 			}
 
-			assignment.busStopCount[assignment.assignment.get(i)]++;
+			assignment.busStopCount[assignment.assignment.get(index)]++;
 		}
 
 		return assignment;

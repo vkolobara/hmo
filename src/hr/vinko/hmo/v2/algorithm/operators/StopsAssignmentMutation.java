@@ -10,12 +10,6 @@ import hr.vinko.hmo.v2.algorithm.Solution;
 
 public class StopsAssignmentMutation implements Mutation<Solution> {
 
-	private double mutRate;
-
-	public StopsAssignmentMutation(double mutRate) {
-		this.mutRate = mutRate;
-	}
-
 	@Override
 	public Solution mutate(Solution child) {
 		int busCapacity = child.getParser().getBusCapacity();
@@ -23,52 +17,52 @@ public class StopsAssignmentMutation implements Mutation<Solution> {
 		int[] assignment = Arrays.copyOf(child.assignment, child.assignment.length);
 		int[] busStopCount = Arrays.copyOf(child.busStopCount, child.busStopCount.length);
 
-		if (rand.nextDouble() <= mutRate) {
+		Map<Integer, List<Integer>> availableMap = child.getStudentAssignment().possibilities;
+		
+		int capacity = 0;
+		int numTries = 0;
+		int index = 0;
+		do {
+			index = rand.nextInt(busStopCount.length);
+			capacity = busStopCount[index];
+		} while (capacity < busCapacity / 2 && numTries++ < 10);
 
-			Map<Integer, List<Integer>> availableMap = child.getStudentAssignment().possibilities;
+		while (capacity == 0) {
+			index = rand.nextInt(busStopCount.length);
+			capacity = busStopCount[index];
+		}
 
-			int capacity = 0;
-			int numTries = 0;
-			int index = 0;
-			do {
-				index = rand.nextInt(busStopCount.length);
-				capacity = busStopCount[index];
-			} while (capacity < busCapacity / 2 && numTries++ < 10);
+		int nRemove = rand.nextInt(capacity);
+		busStopCount[index] -= nRemove;
+		
+		for (int i = 0; i < assignment.length && nRemove > 0; i++) {
+			if (assignment[i] == index && rand.nextBoolean()) {
+				List<Integer> possibilites = new ArrayList<>(availableMap.get(i));
 
-			while (capacity == 0) {
-				index = rand.nextInt(busStopCount.length);
-				capacity = busStopCount[index];
-			}
+				int ind = rand.nextInt(possibilites.size());
 
-			int nRemove = capacity;
-			busStopCount[index] -= nRemove;
-			
-			for (int i = 0; i < assignment.length && nRemove > 0; i++) {
-				if (assignment[i] == index) {
-					List<Integer> possibilites = new ArrayList<>(availableMap.get(i));
+				while (true) {
+					if (ind == 0) break;
+					int sel = possibilites.get(ind);
 
-					int ind = rand.nextInt(possibilites.size());
-
-					while (true) {
-						int sel = possibilites.get(ind);
-
-						if (busStopCount[sel] + 1 < busCapacity) {
-							assignment[i] = sel;
-							break;
-						} else {
-							possibilites.remove(ind);
-							ind = ind - 1 > 0 ? ind - 1 : 0;
-						}
+					if (busStopCount[sel] + 1 < busCapacity) {
+						assignment[i] = sel;
+						break;
+					} else {
+						possibilites.remove(ind);
+						ind = ind - 1 > 0 ? ind - 1 : 0;
 					}
-
-					busStopCount[assignment[i]]++;
-					nRemove--;
-
 				}
-			}
+
+				busStopCount[assignment[i]]++;
+				nRemove--;
+
+			} 
+
+			if (i==assignment.length-1) i = 0;
 
 		}
-		
+
 		return new Solution(routes, assignment, busStopCount, child.getParser(), child.getStudentAssignment());
 
 	}
