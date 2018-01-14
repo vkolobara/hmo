@@ -1,0 +1,199 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Example: Project Report
+%
+% Source: http://www.howtotex.com
+%
+% Feel free to distribute this example, but please keep the referral
+% to howtotex.com
+% Date: March 2011 
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% How to use writeLaTeX: 
+%
+% You edit the source code here on the left, and the preview on the
+% right shows you the result within a few seconds.
+%
+% Bookmark this page and share the URL with your co-authors. They can
+% edit at the same time!
+%
+% You can upload figures, bibliographies, custom classes and
+% styles using the files menu.
+%
+% If you're new to LaTeX, the wikibook is a great place to start:
+% http://en.wikibooks.org/wiki/LaTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Edit the title below to update the display in My Documents
+%\title{Project Report}
+%
+%%% Preamble
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{caption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[pdftex]{graphicx}	
+\usepackage{url}
+
+
+%%% Custom sectioning
+\usepackage{sectsty}
+\allsectionsfont{\centering \normalfont\scshape}
+
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}											% No page header
+\fancyfoot[L]{}											% Empty 
+\fancyfoot[C]{}											% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
+\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
+\setlength{\headheight}{13.6pt}
+
+
+%%% Equation and float numbering
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}			% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+%%% Maketitle metadata
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\title{
+		%\vspace{-1in} 	
+		\normalfont \normalsize \textsc{Fakultet elektrotehnike i računarstva} \\ [25pt]
+		\horrule{0.5pt} \\[0.4cm]
+		\huge Heurističke metode optimizacija \\
+		\Large Usmjeravanje školskih autobusa \\
+		\horrule{2pt} \\[0.5cm]
+}
+\author{
+		\normalfont 								\normalsize
+        Vinko Kolobara \\[-3pt]		\normalsize
+        \today
+}
+\date{}
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+\section{Opis problema}
+\paragraph{}
+Problem usmjeravanja školskih autobusa je varijacija problema usmjeravanja vozila u kojemu nemamo predefinirane postaje, nego moramo odrediti i postaje koje ćemo posjetiti, te formirati autobusne linije što ovisi o mjesto stanovanja pojedinog učenika (na koju stanicu ide koji učenik) i kapaciteta autobusa.
+\paragraph{}
+
+\textbf{Cilj} rješavanja problema je:
+\begin{enumerate}
+\item odrediti skup stanica koje će se posjetiti,
+\item odrediti za svakog učenika do koje stanice treba hodati,
+\item odrediti autobusne linije, tako da se minimizira ukupna udaljenost koju autobusi prelaze.
+\end{enumerate}
+
+Pritom vrijede neka \textbf{ograničenja i pretpostavke}:
+\begin{enumerate}
+\item svakom učeniku mora biti dodijeljena stanica čija je udaljenost manja od maksimalne dozvoljene udaljenosti,
+\item svi autobusi imaju isti kapacitet koji ne smije biti premašen,
+\item svaku postaju posjećuje samo jedan autobus, što znači da svi učenici koji idu na istu stanicu ne mogu ići različitim autobusima.
+\end{enumerate}
+
+Početna i završna točka svih autobusnih linija mora biti škola.
+
+%% Možda dodaj i matematičku formulaciju tu
+
+
+\section{Opis algoritma}
+Za rješavanje navedenog problema, korišten je hibridni genetski algoritam.
+\subsection{Prikaz rješenja}
+Svaki kromosom sastoji se od:
+
+\begin{itemize}
+\item zapisa autobusnih linija, permutacijski vektor cijelih brojeva koji predstavlja redoslijed obilaska stanica. Dekodira se u više linija tako da, kada se vidi da je premašen kapacitet autobusa, počinje nova linija, a sve stanice koje nisu posjećene se jednostavno preskaču.
+\item zapis dodjele stanica studentima, vektor cijelih brojeva koji označava koji student ide na koju stanicu.
+\item broj studenata po stanicama, pomoćni vektor cijelih brojeva koji olakšava dodjeljivanje stanica.
+\end{itemize}
+
+\begin {table}[h]
+\caption{Primjer kromosoma, kapacitet autobusa 3}
+\begin{center}
+\begin{tabular}{ | c | c | c | c | c |}
+	\hline
+	1	&	3	&	2	&	0	&	5 \\
+	\hline
+\end{tabular}
+
+\caption*{Zapis autobusnih linija, dekodirat će se u dvije linije: 1, 3 -> 0}
+
+\begin{tabular}{ | c | c | c | c | c |}
+	\hline
+	0	&	1	&	1	&	1	&	2 \\
+	\hline
+\end{tabular}
+
+\caption*{Dodjela stanica studentima, student 1 ide na stanicu 0, student 2 na stanicu 1 \dots}
+
+\begin{tabular}{ | c | c | c | c | c |}
+	\hline
+	1	&	3	&	1	&	0	&	0 \\
+	\hline
+\end{tabular}
+\caption*{Broj studenata po stanicama, stanica 0 ima 1 studenta, stanica 1 3 studenta i stanica 2 1 studenta }
+
+\end{center}
+\end{table}
+
+\subsection{Funkcija cilja}
+Funkcija cilja je predstavljena zbrojem duljina svih linija (euklidska udaljenost). Kako nam je želja što manja ukupna udaljenost, ovo je problem minimizacije.
+
+\subsection{Generiranje početnog rješenja}
+Stvaranje početnog rješenja odvija se u dvije faze. U prvoj fazi, potrebno je dodijeliti stanice studentima, a druga faza odnosi se na određivanje autobusnih linija tako odabranom podskupu stanica.
+
+\subsubsection{Dodjeljivanje stanica studentima}
+Za ovaj dio koristi se GRASP i to tako da se svakom studentu nasumično dodijeli jedna od $\alpha$ stanica najbližih školi (nije nam bitno koliko jadni studenti pješače).
+
+\subsubsection{Određivanje linija}
+I za ovaj dio se koristi GRASP, i to tako što se prvo postave linije tako da je jedna stanica jedna linija. Nakon toga spajamo linije uz heuristiku:
+\[h(i,j) = distanceToSchool(i) + distanceToSchool(j) - euclideanDistance(i,j)\]
+Nakon toga, temeljem heuristike spajamo nasumično jedan od $\alpha$ najboljih parova.
+
+\subsection{Kriterij zaustavljanja}
+Kriterij zaustavljanja algoritma je 5 minuta bez unaprjeđivanja rješenja, ili 60 minuta ukupnog trajanja izvođenja.
+
+\subsection{Tijek algoritma}
+Algoritam je blaga varijacija na klasični genetski algoritam što se može vidjeti iz pseudokoda.
+
+\begin{algorithm}[h]
+\caption{Hibridni genetski algoritam}
+\begin{algorithmic}
+\Procedure{HGA}{}
+\State stvori početnu populaciju pomoću GRASP-a
+\State evaluiraj početnu populaciju
+\While{!kriterijZaustavljanja}
+  \If{iter mod 10000 }
+    \State ubaci novo GRASP rješenje u populaciju
+  \Else
+    \State turnirska selekcija 
+    \State križaj i mutiraj novu jedinku
+    \State evaluiraj novu jedinku
+    \State zamijeni najgoru jedinku turnira s novom jedinkom
+  \EndIf
+\EndWhile
+\If{nema napretka}
+  \State stvori novu populaciju
+  \State dodaj najbolje rješenje iz stare u novu populaciju
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+%%% End document
+\end{document}

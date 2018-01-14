@@ -2,7 +2,10 @@ package hr.vinko.hmo.v2.algorithm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -18,6 +21,7 @@ public class Solution {
 	private Parser parser;
 	private StudentAssignment studentAssignment;
 	private static Random rand = new Random();
+	private double fitness;
 
 	public Solution(int[] routes, int[] assignment, int[] busStopCount, Parser parser,
 			StudentAssignment studentAssignment) {
@@ -30,6 +34,10 @@ public class Solution {
 	}
 
 	public double getFitness() {
+		return fitness;
+	}
+
+	public double calculateFitness() {
 		double fitness = 0;
 
 		double[] busStopDistances = parser.getStopToSchoolDistance();
@@ -123,12 +131,14 @@ public class Solution {
 				int index = studList[i];
 				List<Integer> queue = new ArrayList<>(studentAssignment.possibilities.get(index));
 				int ind = 0;
-
+				int alpha;
 				if (greedy) {
-					ind = rand.nextInt(Math.min(5, queue.size()));
+					alpha = Math.max(1, queue.size() / 5);
 				} else {
-					ind = rand.nextInt(queue.size());
+					alpha = queue.size();
 				}
+				ind = rand.nextInt(alpha);
+				ind = rand.nextInt(alpha);
 
 				while (true) {
 					if (queue.size() == 0)
@@ -162,15 +172,110 @@ public class Solution {
 		 */
 
 		int[] finalSolution = new int[busStopCount.length];
-		for (int i = 0; i < finalSolution.length; i++) {
-			finalSolution[i] = i;
+
+		List<Coordinate> busStops = parser.getBusStops();
+		double[] stopDistances = parser.getStopToSchoolDistance();
+
+		List<List<Integer>> solution = new ArrayList<>();
+
+		List<Integer> studentsPerRoute = new ArrayList<>();
+
+		Map<Integer, Integer> busStopOnRoute = new HashMap<>();
+		double[][] savingsMatrix = new double[busStops.size()][busStops.size()];
+
+		List<Pair> queue = new ArrayList<>();
+
+		for (int i = 0; i < busStopCount.length; i++) {
+			int value = busStopCount[i];
+
+			if (value > 0) {
+				List<Integer> sol = new ArrayList<>();
+				sol.add(i);
+				solution.add(sol);
+				studentsPerRoute.add(value);
+				busStopOnRoute.put(i, solution.size() - 1);
+			}
+
+			for (int j = 0; j < i; j++) {
+				savingsMatrix[i][j] = stopDistances[i] + stopDistances[j]
+						- Coordinate.euclideanDistance(busStops.get(i), busStops.get(j));
+				queue.add(new Solution.Pair(i, j));
+			}
 		}
 
-		for (int i = 0; i < finalSolution.length; i++) {
-			int randomPosition = rand.nextInt(finalSolution.length);
-			int temp = finalSolution[i];
-			finalSolution[i] = finalSolution[randomPosition];
-			finalSolution[randomPosition] = temp;
+		queue.sort(new Comparator<Pair>() {
+			@Override
+			public int compare(Pair o1, Pair o2) {
+				return -Double.compare(savingsMatrix[o1.x][o1.y], savingsMatrix[o2.x][o2.y]);
+			}
+		});
+
+		while (!queue.isEmpty()) {
+			int alpha = Math.min(Math.max(queue.size() / 10, 5), queue.size());
+
+			int index = rand.nextInt(alpha);
+
+			Pair curr = queue.get(index);
+
+			int i = curr.x;
+			int j = curr.y;
+
+			if (busStopOnRoute.get(i) != null && busStopOnRoute.get(j) != null
+					&& (studentsPerRoute.get(busStopOnRoute.get(i))
+							+ studentsPerRoute.get(busStopOnRoute.get(j))) <= busCapacity
+					&& studentsPerRoute.get(busStopOnRoute.get(i)) > 0
+					&& studentsPerRoute.get(busStopOnRoute.get(j)) > 0 && i != j) {
+
+				if (solution.get(busStopOnRoute.get(i)).get(0) == i && solution.get(busStopOnRoute.get(j))
+						.get(solution.get(busStopOnRoute.get(j)).size() - 1) == j) {
+
+					studentsPerRoute.set(busStopOnRoute.get(i),
+							studentsPerRoute.get(busStopOnRoute.get(i)) + studentsPerRoute.get(busStopOnRoute.get(j)));
+					studentsPerRoute.set(busStopOnRoute.get(j), 0);
+
+					for (Integer elem : solution.get(busStopOnRoute.get(j))) {
+						busStopOnRoute.put(elem, busStopOnRoute.get(i));
+						solution.get(busStopOnRoute.get(i)).add(elem);
+					}
+
+				} else if (solution.get(busStopOnRoute.get(j)).get(0) == j && solution.get(busStopOnRoute.get(i))
+						.get(solution.get(busStopOnRoute.get(i)).size() - 1) == i) {
+
+					studentsPerRoute.set(busStopOnRoute.get(j),
+							studentsPerRoute.get(busStopOnRoute.get(j)) + studentsPerRoute.get(busStopOnRoute.get(i)));
+					studentsPerRoute.set(busStopOnRoute.get(i), 0);
+
+					for (Integer elem : solution.get(busStopOnRoute.get(i))) {
+						busStopOnRoute.put(elem, busStopOnRoute.get(j));
+						solution.get(busStopOnRoute.get(j)).add(elem);
+					}
+
+				}
+
+			}
+
+			queue.remove(index);
+		}
+
+		List<Integer> unvisited = new ArrayList<>();
+		for (int i = 0; i < busStopCount.length; i++) {
+			unvisited.add(i);
+		}
+
+		int index = 0;
+		for (int i = 0; i < solution.size(); i++) {
+			List<Integer> route = solution.get(i);
+			if (studentsPerRoute.get(i) > 0) {
+				for (int j = 0; j < route.size(); j++) {
+					finalSolution[index++] = route.get(j);
+					unvisited.remove(route.get(j));
+				}
+			}
+		}
+
+		for (; index < finalSolution.length; index++) {
+			finalSolution[index] = unvisited.get(rand.nextInt(unvisited.size()));
+			unvisited.remove(new Integer(finalSolution[index]));
 		}
 		/*
 		 * *********************************************************************
@@ -178,9 +283,19 @@ public class Solution {
 		 * *********************************************************************
 		 * ***********
 		 */
+		Solution sol = new Solution(finalSolution, assignment, busStopCount, parser, studentAssignment);
+		sol.fitness = sol.calculateFitness();
+		return sol;
 
-		return new Solution(finalSolution, assignment, busStopCount, parser, studentAssignment);
+	}
 
+	private static class Pair {
+		public Pair(int i, int j) {
+			x = i;
+			y = j;
+		}
+
+		int x, y;
 	}
 
 	public Parser getParser() {
@@ -219,6 +334,10 @@ public class Solution {
 		}
 
 		return sb.toString();
+	}
+
+	public void setFitness(double fitness) {
+		this.fitness = fitness;
 	}
 
 }

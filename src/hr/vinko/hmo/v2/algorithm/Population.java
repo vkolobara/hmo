@@ -14,12 +14,12 @@ public class Population {
 		population = new ArrayList<>(size);
 	}
 	
-	public static Population initPopulation(int size, Parser parser, StudentAssignment assignment) {
+	public static Population initPopulation(int size, Parser parser, StudentAssignment assignment, boolean greedy) {
 		
 		Population pop = new Population(size);
 		
 		while (pop.population.size() < size) {
-			pop.population.add(Solution.initGRASP(parser, assignment, true));
+			pop.population.add(Solution.initGRASP(parser, assignment, greedy));
 		}
 		
 		return pop;

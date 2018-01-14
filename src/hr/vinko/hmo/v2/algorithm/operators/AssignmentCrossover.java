@@ -10,7 +10,7 @@ public class AssignmentCrossover implements Crossover<Solution> {
 	@Override
 	public Solution mate(Solution parent1, Solution parent2) {
 		Solution child = null;
-		if (rand.nextBoolean()) {
+		if (parent1.getFitness() > parent2.getFitness()) {
 			child = crx(parent1, parent2);
 		} else {
 			child = crx(parent2, parent1);
@@ -28,7 +28,7 @@ public class AssignmentCrossover implements Crossover<Solution> {
 //		Map<Integer, List<Integer>> available = parent1.getStudentAssignment().possibilities;
 
 		for (int i = 0; i < assignment.length; i++) {
-			if (rand.nextBoolean()) {
+			if (rand.nextDouble()<=0.1) {
 				if (busStopCount[parent2.assignment[i]] < busCapacity) {
 					busStopCount[assignment[i]]--;
 					assignment[i] = parent2.assignment[i];

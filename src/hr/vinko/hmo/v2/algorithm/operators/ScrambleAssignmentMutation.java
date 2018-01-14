@@ -33,7 +33,11 @@ public class ScrambleAssignmentMutation implements Mutation<Solution> {
 				int ind = rand.nextInt(alpha);
 				busStopCount[assignment[i]]--;
 
+				
 				while (true) {
+					if (possibilites.size() == 0) {
+						break;
+					}
 					int sel = possibilites.get(ind);
 
 					if (busStopCount[sel] + 1 < busCapacity) {

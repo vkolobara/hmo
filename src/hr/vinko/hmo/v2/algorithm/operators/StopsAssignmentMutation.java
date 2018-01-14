@@ -33,7 +33,6 @@ public class StopsAssignmentMutation implements Mutation<Solution> {
 		}
 
 		int nRemove = rand.nextInt(capacity);
-		busStopCount[index] -= nRemove;
 		
 		for (int i = 0; i < assignment.length && nRemove > 0; i++) {
 			if (assignment[i] == index && rand.nextBoolean()) {
@@ -42,7 +41,9 @@ public class StopsAssignmentMutation implements Mutation<Solution> {
 				int ind = rand.nextInt(possibilites.size());
 
 				while (true) {
-					if (ind == 0) break;
+					if (possibilites.size()==0) {
+						break;
+					}
 					int sel = possibilites.get(ind);
 
 					if (busStopCount[sel] + 1 < busCapacity) {
@@ -53,7 +54,8 @@ public class StopsAssignmentMutation implements Mutation<Solution> {
 						ind = ind - 1 > 0 ? ind - 1 : 0;
 					}
 				}
-
+				
+				busStopCount[index]--;
 				busStopCount[assignment[i]]++;
 				nRemove--;
 
