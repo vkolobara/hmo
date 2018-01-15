@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2017.5.21)  14 JAN 2018 23:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/W32TeX) (preloaded format=pdflatex 2017.5.21)  15 JAN 2018 23:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1119,25 +1119,42 @@ LaTeX Font Info:    Font shape `U/futm/m/n' will be
 (Font)              scaled to size 7.63599pt on input line 128.
 LaTeX Font Info:    Font shape `U/futm/m/n' will be
 (Font)              scaled to size 5.51999pt on input line 128.
- [2] [3] (./report.aux) ) 
+ [2] [3]
+Overfull \hbox (0.72118pt too wide) in paragraph at lines 217--218
+[]\T1/futs/m/n/10.95 (-20) Za potrebe pro-jekta im-ple-men-ti-rano je vi²e vrst
+a kriºanja: Or-dered-Crossover, Cy-cle-Crossover,
+ []
+
+[4]
+Overfull \hbox (23.649pt too wide) in paragraph at lines 252--263
+ [] 
+ []
+
+
+Overfull \hbox (17.21454pt too wide) in paragraph at lines 265--266
+[]\T1/futs/m/n/10.95 (-20) Algoritam je izvr²en na 10 in-stanci u tra-janju od 
+1 minute, tra-janju od 5 min-uta te neograni£enom
+ []
+
+[5] [6] [7] (./report.aux) ) 
 Here is how much of TeX's memory you used:
- 9563 strings out of 493013
- 152507 string characters out of 6136993
- 321640 words of memory out of 5000000
- 12818 multiletter control sequences out of 15000+600000
- 97828 words of font info for 152 fonts, out of 8000000 for 9000
+ 9649 strings out of 493013
+ 153363 string characters out of 6136993
+ 325660 words of memory out of 5000000
+ 12820 multiletter control sequences out of 15000+600000
+ 103428 words of font info for 218 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,10n,51p,8846b,381s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.en
-c}<c:/texlive/2016/texmf-dist/fonts/type1/public/fourier/fourier-mlit.pfb><c:/t
-exlive/2016/texmf-dist/fonts/type1/public/fourier/fourier-ms.pfb><c:/texlive/20
-16/texmf-dist/fonts/type1/adobe/utopia/putb8a.pfb><c:/texlive/2016/texmf-dist/f
-onts/type1/adobe/utopia/putr8a.pfb><c:/texlive/2016/texmf-dist/fonts/type1/adob
-e/utopia/putri8a.pfb>
-Output written on report.pdf (3 pages, 56190 bytes).
+{c:/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r
+.enc}<c:/texlive/2016/texmf-dist/fonts/type1/public/fourier/fourier-mlit.pfb><c
+:/texlive/2016/texmf-dist/fonts/type1/public/fourier/fourier-ms.pfb><c:/texlive
+/2016/texmf-dist/fonts/type1/adobe/utopia/putb8a.pfb><c:/texlive/2016/texmf-dis
+t/fonts/type1/adobe/utopia/putr8a.pfb><c:/texlive/2016/texmf-dist/fonts/type1/a
+dobe/utopia/putri8a.pfb>
+Output written on report.pdf (7 pages, 69976 bytes).
 PDF statistics:
- 35 PDF objects out of 1000 (max. 8388607)
- 24 compressed objects within 1 object stream
+ 49 PDF objects out of 1000 (max. 8388607)
+ 34 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  37377 words of extra memory for PDF output out of 42996 (max. 10000000)
 

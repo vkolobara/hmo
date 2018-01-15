@@ -169,10 +169,10 @@ Nakon toga, temeljem heuristike spajamo nasumično jedan od $\alpha$ najboljih p
 Kriterij zaustavljanja algoritma je 5 minuta bez unaprjeđivanja rješenja, ili 60 minuta ukupnog trajanja izvođenja.
 
 \subsection{Tijek algoritma}
-Algoritam je blaga varijacija na klasični genetski algoritam što se može vidjeti iz pseudokoda.
+Algoritam je blaga varijacija na klasični eliminacijski genetski algoritam što se može vidjeti iz pseudokoda.
 
 \begin{algorithm}[h]
-\caption{Hibridni genetski algoritam}
+\caption{Eliminacijski genetski algoritam}
 \begin{algorithmic}
 \Procedure{HGA}{}
 \State stvori početnu populaciju pomoću GRASP-a
@@ -194,6 +194,103 @@ Algoritam je blaga varijacija na klasični genetski algoritam što se može vidj
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Genetski operatori}
+Genetski algoritam je vođen genetskim operatorima:
+
+\begin{itemize}
+\item Selekcija
+\item Križanje
+\item Mutacija
+\end{itemize}
+
+\subsubsection{Selekcija}
+Operator selekcije zadužen je za biranje jedinki iz populacije koje će ići dalje u reprodukciju (križanje i mutaciju), ali i odabir jedinke koja će biti zamijenjena rezultatom reprodukcije. Korištena selekcija za ovaj problem je k-turnirska selekcija.
+
+K-turnirska selekcija radi tako što se nasumično iz populacije odabere k jedinki, najbolje 2 se odaberu za roditelje, dok se najlošija kasnije zamijeni rezultatom reprodukcije roditelja.
+U ovoj selekciji je bitan parametar k, što je k veći, to je i selekcijski pritisak veći.
+
+\subsubsection{Križanje}
+Operator križanja omogućuje kombiniranje 2 rješenja u jedno novo rješenje koje će imati značajke oba roditelja. Time omogućujemo finije pretraživanje prostora stanja.
+Važno je naglasiti, da se križanje ne mora nužno izvesti prilikom svake iteracije, tu uvodimo parametar $crxRate$ koji označava vjerojatnost izvršenja križanja. Zaključak vezan za taj parametar je da $crxRate$ treba biti što veći. 
+
+Za potrebe projekta implementirano je više vrsta križanja: OrderedCrossover, CycleCrossover, AssigmentCrossover. Križanje koje se izvodi u pojedinoj iteraciji je određeno nasumično. Moguće je i dodati različite vjerojatnosti ovisno o križanju, ali takav pristup nije pokazao značajnija poboljšanja za navedena križanja.
+
+\paragraph{OrderedCrossover}
+ je vrsta križanja u kojoj se nasumični podniz uzme od jednog roditelja, dok se ostali elementi unose onim redom kojim se pojavljuju u drugom roditelju. 
+ 
+\paragraph{AssignmentCrossover}
+ je varijanta uniformnog križanja u kojem se s malom vjerojatnosti geni boljeg roditelja mijenjaju za gene lošijeg roditelja, tj. dodjela stanica studentima se uglavnom zadrži od boljeg roditelja, ali neki postotak može prijeći od lošijeg čime možda možemo dobiti bolja rješenja.
+ 
+\paragraph{CycleCrossover}
+  je vrsta križanja gdje tražimo cikluse u roditeljima. Nađemo ciklus u prvom roditelju, prepišemo elemente ciklusa u dijete (na istim pozicijama kao u roditelju). Ostale elemente prepišemo iz drugog roditelja.
+
+\subsubsection{Mutacija}
+Operator mutacije omogućuje izbjegavanje lokalnih optimuma, tako da se nasumično izmijene geni jedinke. Važnost mutacije je time suprotna od križanja, omogućuje kaotičnije pretraživanje prostora stanja u nadi da će nas odvesti u bolji lokalni (ili globalni) optimum. I mutacija se, kao i križanje, ne izvodi pri svakoj iteraciji, već tu uvodimo parametar $mutRate$ koji označava vjerojatnost izvršenja mutacije. Zaključak izveden iz ovog rada je da $mutRate$ treba biti relativno malen.
+
+Kao i za križanja, implementirano je više operatora mutacije: ScrambleRoutesMutation, ScrambleAssignmentMutation, InversionRoutesMutation, StopsAssignmentMutation.
+
+\paragraph{ScrambleRoutesMutation}
+ uzima nasumični podniz autobusnih linija i izmiješa ga.
+
+\paragraph{ScrambleAssignmentMutation}
+ sa jako malom vjerojatnošću određuje hoće li pojedini gen mutirati i to tako da skloni studenta dodijeljenog s neke stanice i dodijeli mu drugu stanicu.
+ 
+\paragraph{InversionRoutesMutation}
+ uzima nasumični podniz autobusnih linija i invertira ga. 
+
+\paragraph{StopsAssignmentMutation}
+ bira jednu stanicu čija je posjećenost veća od 1, nakon toga ukloni nasumičan broj studenata sa stanice i dodijeli tim studentima novu stanicu.
+ 
+\section{Analiza rezultata}
+U genetskom algoritmu je bitno dobro namjestiti parametre, inače se algoritam može ponašati neželjeno. Najvažniji parametri su vjerojatnosti križanja i mutacije čiji utjecaj je jako velik. Npr. velika vjerojatnost mutacije, može upropastiti moguće dobro rješenje nastalo križanjem mnogo češće nego što će generirati kvalitetna rješenja. Slično vrijedi i za vjreojatnost križanja, ako stavimo premalu vjerojatnost križanja, prepušteni smo samo širokom pretraživanju stanja što donekle nalikuje na nasumično pretraživanje čime ne možemo jako daleko doći.
+
+Prikazani parametri u tablici \ref{tab:param} su se pokazali kao jako dobrima za problem raspoređivanja školskih autobusa.
+
+\begin{center}
+\captionof{table}{Prikaz parametara}\label{tab:param}
+\begin{tabular}{| c | c | c |}
+
+  \hline
+  Naziv parametra & opis parametra & vrijednost \\
+  \hline
+  \textbf{popSize}	& veličina populacije	& 30 \\
+  \textbf{crxRate}  & vjerojatnost križanja & 0.995 \\
+  \textbf{mutRate}  & vjerojatnost mutacije & 0.1 \\
+  \textbf{iterNoProgress} & broj iteracija bez napretka nakon kojeg se osvježava populacija & 100000 \\
+  \hline
+\end{tabular}
+\end{center}
+
+Algoritam je izvršen na 10 instanci u trajanju od 1 minute, trajanju od 5 minuta te neograničenom trajanju. Dobiveni rezultati su vidljivi u tablici \ref{tab:res}.
+\begin{center}
+\captionof{table}{Rezultati}\label{tab:res}
+\begin{tabular}{| c | c | c | c | c |}
+  \hline
+  instanca & 1min & 5min & ne \\
+  \hline
+  \textbf{sbr1} & 142.23 & 142.23 & 140.40 \\
+  \textbf{sbr2} & 130.17 & 123.19 & 120.68 \\
+  \textbf{sbr3} & 2775.98 & 2754.67 & 2670.32 \\
+  \textbf{sbr4} & 1819.78 & 1819.78 & 1677.41 \\
+  \textbf{sbr5} & 2116.22 & 2090.02 & 2013.27 \\
+  \textbf{sbr6} & 1630.44 & 1427.86 & 1334.69 \\
+  \textbf{sbr7} & 1313.27 & 1305.82 & 1278.69 \\
+  \textbf{sbr8} & 869.65 & 818.63 & 810.12 \\
+  \textbf{sbr9} & 325.99 & 325.99 & 325.77 \\
+  \textbf{sbr10} & 149.55 & 149.55 & 143.88 \\
+  \hline
+\end{tabular}
+\end{center}
+
+\pagebreak
+
+\section{Zaključak}
+U ovom izvještaju se mogla vidjeti primjena genetskog algoritma na problem raspoređivanja školskih autobusa. Ovaj problem je varijacija na problem usmjeravanja vozila, uz razliku što postaje koje treba posjetiti nisu statične, već treba odrediti i optimalnu dodjelu postaja studentima. Samim time je problem znatno teži od usmjeravanja vozila, kao i problema trgovačkog putnika i pripada razredu \textbf{NP-teških} problema.
+
+Genetski algoritam je u prošlosti primjenjen na velik broj optimizacijskih problema, i to uspješno, što me navelo na korištenje istog na ovaj problem. Zbog jednostavnosti, omogućuje izvođenje velikog broja iteracija u kratkom vremenu. Iz rezultata se isto može vidjeti da jako brzo dođe do konačnog rješenja, u pravilu mu povećanje vremena nije toliko bitno, već u 5 minuta dođe do zadovoljavajućih vrijednosti funkcije cilja. Ovo može biti i problem, i značiti da rano zapne u lokalnom optimumu, ali obzirom na dobivena rješenja, izgleda zadovoljavajuće.
+
+Moguća poboljšanja algoritma su novi operatori križanja, koji će uzimati u obzir i autobusne linije, pokušati na pametan način kombinirati linije, ali i dodjele stanica studentima, kako bi dobili što kraću i što popunjeniju liniju. Isto tako, mogući su i drugi operatori mutacija, koji će također pratiti optimalne linije, dodjeljivanja stanica studentima i ovisno o tome raditi ne tako nasumično pretraživanje stanja. Dodatno, moguće je i dodati više vrsta generiranja početnog rješenja, čime bi se uvelike povećala raznolikost početne populacije što povećava vjerojatnost genetskom algoritmu za pronalazak boljih rješenja.
 
 %%% End document
 \end{document}
